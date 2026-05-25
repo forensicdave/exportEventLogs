@@ -2,7 +2,7 @@
 
 Version 1.1 — <https://github.com/forensicdave/exportEventLogs>
 
-A small Go program that exports **every** Windows event log channel to `.evtx`
+A rather useful small program that exports **every** (or selected matching - you choose!) Windows event log channel to `.evtx`
 files in a directory. It compiles to a single self-contained `.exe` — nothing to
 install on the target host (no Python, no runtime).
 
@@ -25,6 +25,22 @@ equivalent of exporting every channel with `wevtutil epl` in a loop.
 > Still requires a running Windows Event Log service (and `wevtapi.dll`, a core
 > OS component). That's a far more fundamental dependency than the `wevtutil`
 > binary — if it's missing, event logging itself isn't working.
+
+## Antivirus / VirusTotal false positive
+
+Some antivirus engines on VirusTotal flag the prebuilt `exportEventLogs.exe` as
+potentially malicious. **This is a false positive.** Like many digital-forensics
+and incident-response tools, it does things that overlap with attacker
+behaviour — it bulk-exports every event log channel and reads firmware/registry
+identifiers (manufacturer, serial, UUID) for the manifest — and it's an unsigned,
+low-prevalence Go binary, all of which trip heuristic and machine-learning
+detections.
+
+The entire source is in this repository. If you'd rather not trust the prebuilt
+binary, **review the code and compile it yourself** (see [Build](#build)) — the
+result is byte-for-byte the same tool. Each release also ships a SHA-256 so you
+can verify the download, and you're welcome to report the false positive to your
+AV vendor.
 
 ## Build
 
