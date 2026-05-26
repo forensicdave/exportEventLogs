@@ -66,6 +66,37 @@ need to:
   Windows. If that's not acceptable, build the tool yourself on the target host
   instead.
 
+## When to fall back to PowerShell
+
+In environments with **strict application control** — WDAC in signed-only mode,
+AppLocker with publisher rules, or Smart App Control — an unsigned
+`exportEventLogs.exe` is blocked at the EXE layer no matter how legitimate it
+is, and the right tool is Microsoft's own signed `wevtutil` driven from
+PowerShell:
+
+```powershell
+$dest = "C:\export"
+New-Item -ItemType Directory -Force -Path $dest | Out-Null
+foreach ($log in (wevtutil el)) {
+    $file = ($log -replace '[\\/]', '-') + '.evtx'
+    wevtutil epl "$log" (Join-Path $dest $file) /ow:true 2>$null
+}
+```
+
+This survives strict policy because `powershell.exe` and `wevtutil.exe` are both
+Microsoft-signed, and the loop works in PowerShell **Constrained Language
+Mode** (it's just process invocation). The trade-off is footprint and evidence:
+you spawn one `wevtutil` child per channel — typically 1,000+ Security 4688 /
+Sysmon 1 events on a normal host — and you don't get the chain-of-custody
+manifest. `exportEventLogs` is built for the *complementary* case where you
+control or have vetted the box and can pre-stage and hash-allowlist your
+toolkit: one quiet process call, plus a hashed, timestamped, SMBIOS-stamped
+manifest in the same run. Treat them as a pair in your IR runbook — signed
+binary primary, PowerShell loop as the fallback. Once Authenticode signing
+lands (see *Coming soon*, above), a WDAC policy that trusts the publishing
+cert covers `exportEventLogs` the same way it covers Microsoft's tools, and
+this gap narrows substantially.
+
 ## Build
 
 The build scripts produce **both** Windows binaries (amd64 + arm64), stripped.
