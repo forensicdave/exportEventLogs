@@ -42,6 +42,30 @@ result is byte-for-byte the same tool. Each release also ships a SHA-256 so you
 can verify the download, and you're welcome to report the false positive to your
 AV vendor.
 
+> **Coming soon:** `exportEventLogs.exe` will shortly be **code-signed** with an
+> Authenticode certificate. That should clear most of the antivirus flags and
+> the Windows "unknown publisher" warnings described below.
+
+### Running it when Windows blocks the file
+
+Until the binary is code-signed and has built reputation, Windows may prevent
+it from running on first launch. Depending on your security settings you may
+need to:
+
+- On the **SmartScreen** warning, click **More info → Run anyway**.
+- In the file's **Properties** (right-click → Properties), tick **Unblock** at
+  the bottom of the *General* tab — Windows sets this on anything downloaded
+  from the internet.
+- If **Microsoft Defender** quarantines it, restore it from *Windows Security →
+  Virus & threat protection → Protection history*, and optionally allowlist it
+  via *Manage settings → Exclusions → Add an exclusion → File*.
+- With **Windows 11 Smart App Control (SAC)** enabled, unsigned, low-reputation
+  binaries are blocked outright. You'd need to disable SAC under *Windows
+  Security → App & browser control → Smart App Control settings*. **Note:** SAC
+  is a one-way switch — once turned off it can only be re-enabled by resetting
+  Windows. If that's not acceptable, build the tool yourself on the target host
+  instead.
+
 ## Build
 
 The build scripts produce **both** Windows binaries (amd64 + arm64), stripped.
