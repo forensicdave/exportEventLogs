@@ -219,8 +219,9 @@ ae087973a5ca93f273081d0367f79953a0e3b8493298ef8ad64e56cf19d408b6  10  Applicatio
 The hash lines follow a `sha256  size  filename` layout that's easy to grep or
 re-verify (e.g. with `Get-FileHash` on Windows or `sha256sum` elsewhere).
 
-Once exported, convert the files with the `evtxconvert.py` tool in the parent
-directory.
+Once exported, convert the files with
+[**convertEventLogs.py**](https://github.com/forensicdave/convertEventLogs) — a small
+Python companion tool that turns `.evtx` files into JSON or CSV.
 
 ## More information
 
